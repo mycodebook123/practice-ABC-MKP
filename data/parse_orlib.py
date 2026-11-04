@@ -1,3 +1,5 @@
+import re
+
 from src.mkp.problem import Instance
 
 
@@ -41,3 +43,31 @@ def parse_numbers(nums, prefix, first_index=1):
 
 def load_orlib(path, prefix, first_index=1):
     return parse_numbers(read_numbers(path), prefix, first_index)
+
+
+def load_mkcbres(path):
+    # mkcbres.txt has two tables of lines like "5.100-00   24381".
+    # first table is the best feasible value, second is the LP relaxation,
+    # so the first time a name shows up it's the best value and the second
+    # time it's the LP value. returns (best, lp) as two dicts
+    best, lp = {}, {}
+    with open(path) as f:
+        for line in f:
+            parts = line.split()
+            if len(parts) == 2 and re.fullmatch(r"\d+\.\d+-\d+", parts[0]):
+                value = _clean(float(parts[1]))
+                if parts[0] not in best:
+                    best[parts[0]] = value
+                else:
+                    lp[parts[0]] = value
+    return best, lp
+
+
+def load_mknapcb(path, results_path, prefix):
+    # load one mknapcb file and fill in bks from mkcbres.txt
+    # the key is built from the instance: "<m>.<n>-<index>", like 5.100-00
+    instances = load_orlib(path, prefix, first_index=0)
+    best, _ = load_mkcbres(results_path)
+    for k, inst in enumerate(instances):
+        inst.bks = best[f"{inst.m}.{inst.n}-{k:02d}"]
+    return instances
