@@ -1,0 +1,8 @@
+instance,n,m,published_optimum,brute_force,status
+mknap1-1,6,10,3800,3800.0,match
+mknap1-2,10,10,8706.1,8706.1,match
+mknap1-3,15,10,4015,4015.0,match
+mknap1-4,20,10,6120,6120.0,match
+mknap1-5,28,10,12400,,too large
+mknap1-6,39,5,10618,,too large
+mknap1-7,50,5,16537,,too large
